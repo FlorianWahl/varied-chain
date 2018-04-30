@@ -1,4 +1,4 @@
-package variedchain.data.block;
+package com.variedchain.data.block;
 
 import java.util.Date;
 
