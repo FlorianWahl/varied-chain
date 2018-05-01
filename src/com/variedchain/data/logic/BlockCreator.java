@@ -1,6 +1,5 @@
 package com.variedchain.data.logic;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,120 +12,99 @@ import com.variedchain.data.block.Block;
 
 public class BlockCreator extends BlockFactory {
 
+	private HasherBasic hasher;
+	private Gson gson;
+
+	public BlockCreator() {
+		hasher = new SimpleHasher();
+		gson = new Gson();
+	}
+
 	@Override
 	public boolean addNewBlock(Block block) throws IOException {
-		
 		block.blockId = getSize();
-		
-		HasherBasic h = new SimpleHasher();
-		block.hashPayload = h.calculateHash(block.payload.getBytes());
-		
-		if(block.blockId > 0) {
-			byte[] privhash = loadhash(block.blockId-1);
-			if(privhash == null) {
+		block.hashPayload = hasher.calculateHash(block.payload.getBytes());
+		if (block.blockId > 0) {
+			byte[] privhash = loadhash(block.blockId - 1);
+			if (privhash == null) {
 				return false;
 			}
 			block.hashPriv = privhash;
 		}
-		
-		Gson gson=new Gson();
-		FileWriter fw=new FileWriter(block.blockId+".block.json");
-		gson.toJson(block,fw);
-		fw.close();
-		
-		String b = gson.toJson(block);
-		byte[] blockHash = h.calculateHash(b.getBytes());
-		
-		FileWriter fw2 = new FileWriter(block.blockId+".hash.json");
-		gson.toJson(blockHash,fw2);
-		fw2.close();
+		FileWriter blockFileWriter = new FileWriter(block.blockId + ".block.json");
+		gson.toJson(block, blockFileWriter);
+		blockFileWriter.close();
+
+		String blockString = gson.toJson(block);
+		byte[] blockHash = hasher.calculateHash(blockString.getBytes());
+
+		FileWriter hashFileWriter = new FileWriter(block.blockId + ".hash.json");
+		gson.toJson(blockHash, hashFileWriter);
+		hashFileWriter.close();
 		return true;
 	}
 
 	@Override
-	public boolean checkBlock(long blockID) {
+	public boolean checkBlock(long blockId) {
 		try {
-			Gson gson=new Gson();
-			FileReader fr = new FileReader(blockID+".hash.json");
-			byte[] fsh = gson.fromJson(fr, byte[].class);
-			fr.close();
-			
-			Path path = Paths.get(blockID+".block.json");
+			FileReader hashFileReader = new FileReader(blockId + ".hash.json");
+			byte[] fsh = gson.fromJson(hashFileReader, byte[].class);
+			hashFileReader.close();
+
+			Path path = Paths.get(blockId + ".block.json");
 			byte[] data = Files.readAllBytes(path);
-			
-			HasherBasic h = new SimpleHasher();
-			byte[] ch = h.calculateHash(data);
-			
-			if(ch.length != fsh.length) {
+			byte[] ch = hasher.calculateHash(data);
+			if (ch.length != fsh.length) {
 				return false;
 			}
-			
-			for(int i = 0; i < ch.length; i++) {
-				if(ch[i] != fsh[i]) {
+			for (int i = 0; i < ch.length; i++) {
+				if (ch[i] != fsh[i]) {
 					return false;
 				}
 			}
-			
-			
-			
 		} catch (IOException e) {
-			
 			return false;
 		}
-		
 		return true;
 	}
 
 	@Override
 	public byte[] loadhash(long blockId) {
-		
-		if(!checkBlock(blockId)) {
+		byte[] hash = null;
+		if (!checkBlock(blockId)) {
 			return null;
 		}
-		
-		Gson gson=new Gson();
-		byte[] fsh = null;
-
 		try {
-			FileReader fr = new FileReader(blockId+".hash.json");
-			fsh = gson.fromJson(fr, byte[].class);
-			fr.close();
+			FileReader hashFileReader = new FileReader(blockId + ".hash.json");
+			hash = gson.fromJson(hashFileReader, byte[].class);
+			hashFileReader.close();
 		} catch (IOException e) {
-			
 			return null;
 		}
-		
-		return fsh;
+		return hash;
 	}
 
 	@Override
 	public long getSize() {
 		int size = 0;
-	    while(checkBlock(size)) {
-	    	size++;
-	    	
-	    }
+		while (checkBlock(size)) {
+			size++;
+		}
 		return size;
 	}
 
 	@Override
-	public Block loadBlock(long blockID) {
-		
-		if(!checkBlock(blockID)) {
+	public Block loadBlock(long blockId) {
+		if (!checkBlock(blockId)) {
 			return null;
 		}
-		
-		Gson gson=new Gson();
-
 		try {
-			FileReader fr = new FileReader(blockID+".block.json");
-			Block b = gson.fromJson(fr, Block.class);
-			fr.close();
-			return b;
+			FileReader blockFileReader = new FileReader(blockId + ".block.json");
+			Block block = gson.fromJson(blockFileReader, Block.class);
+			blockFileReader.close();
+			return block;
 		} catch (IOException e) {
 			return null;
 		}
-		
 	}
-
 }
