@@ -13,7 +13,7 @@ public class Main {
 
 	public static void main(String[] args) throws JsonIOException, IOException {
 		Block testBlock = new Block();
-		testBlock.blockVersion = 1;
+		testBlock.blockVersion = 2;
 		testBlock.hashPayload = null;
 		testBlock.hashPriv = null;
 		testBlock.payload = "variedchani";
