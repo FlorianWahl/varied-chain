@@ -13,17 +13,24 @@ import com.variedchain.data.block.Block;
 public class BlockCreator extends BlockFactory {
 
 	private HasherBasic hasher;
+	private HasherAdvanced ahasher;
 	private Gson gson;
 
 	public BlockCreator() {
 		hasher = new SimpleHasher();
+		ahasher = new HasherAdvanced();
 		gson = new Gson();
+
 	}
 
 	@Override
 	public boolean addNewBlock(Block block) throws IOException {
 		block.blockId = getSize();
-		block.hashPayload = hasher.calculateHash(block.payload.getBytes());
+		if (block.blockVersion == 1) {
+			block.hashPayload = hasher.calculateHash(block.payload.getBytes());
+		} else {
+			block.hashPayload = ahasher.calculateHash(block.payload.getBytes());
+		}
 		if (block.blockId > 0) {
 			byte[] privhash = loadhash(block.blockId - 1);
 			if (privhash == null) {
@@ -34,9 +41,13 @@ public class BlockCreator extends BlockFactory {
 		FileWriter blockFileWriter = new FileWriter(block.blockId + ".block.json");
 		gson.toJson(block, blockFileWriter);
 		blockFileWriter.close();
-
+		byte[] blockHash;
 		String blockString = gson.toJson(block);
-		byte[] blockHash = hasher.calculateHash(blockString.getBytes());
+		if (block.blockVersion == 1) {
+			blockHash = hasher.calculateHash(blockString.getBytes());
+		} else {
+			blockHash = ahasher.calculateHash(blockString.getBytes());
+		}
 
 		FileWriter hashFileWriter = new FileWriter(block.blockId + ".hash.json");
 		gson.toJson(blockHash, hashFileWriter);
@@ -45,15 +56,51 @@ public class BlockCreator extends BlockFactory {
 	}
 
 	@Override
-	public boolean checkBlock(long blockId) {
+	public boolean checkBlockById(long id) {
 		try {
-			FileReader hashFileReader = new FileReader(blockId + ".hash.json");
+			FileReader hashFileReader = new FileReader(id + ".hash.json");
 			byte[] fsh = gson.fromJson(hashFileReader, byte[].class);
 			hashFileReader.close();
 
-			Path path = Paths.get(blockId + ".block.json");
+			Path path = Paths.get(id + ".block.json");
 			byte[] data = Files.readAllBytes(path);
-			byte[] ch = hasher.calculateHash(data);
+			byte[] ch;
+			if (loadBlock(id).blockVersion == 1) {
+				 ch = hasher.calculateHash(data);
+			} else {
+				 ch = ahasher.calculateHash(data);
+			}
+
+			if (ch.length != fsh.length) {
+				return false;
+			}
+			for (int i = 0; i < ch.length; i++) {
+				if (ch[i] != fsh[i]) {
+					return false;
+				}
+			}
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean checkBlock(Block block) {
+		try {
+			FileReader hashFileReader = new FileReader(block.blockId + ".hash.json");
+			byte[] fsh = gson.fromJson(hashFileReader, byte[].class);
+			hashFileReader.close();
+
+			Path path = Paths.get(block.blockId + ".block.json");
+			byte[] data = Files.readAllBytes(path);
+			byte[] ch;
+			if (block.blockVersion == 1) {
+				 ch = hasher.calculateHash(data);
+			} else {
+				 ch = ahasher.calculateHash(data);
+			}
+
 			if (ch.length != fsh.length) {
 				return false;
 			}
@@ -69,13 +116,13 @@ public class BlockCreator extends BlockFactory {
 	}
 
 	@Override
-	public byte[] loadhash(long blockId) {
+	public byte[] loadhash(long id) {
 		byte[] hash = null;
-		if (!checkBlock(blockId)) {
+		if (!checkBlockById(id)) {
 			return null;
 		}
 		try {
-			FileReader hashFileReader = new FileReader(blockId + ".hash.json");
+			FileReader hashFileReader = new FileReader(id + ".hash.json");
 			hash = gson.fromJson(hashFileReader, byte[].class);
 			hashFileReader.close();
 		} catch (IOException e) {
@@ -87,7 +134,7 @@ public class BlockCreator extends BlockFactory {
 	@Override
 	public long getSize() {
 		int size = 0;
-		while (checkBlock(size)) {
+		while (checkBlockById(size)) {
 			size++;
 		}
 		return size;
@@ -95,7 +142,7 @@ public class BlockCreator extends BlockFactory {
 
 	@Override
 	public Block loadBlock(long blockId) {
-		if (!checkBlock(blockId)) {
+		if (!checkBlockById(blockId)) {
 			return null;
 		}
 		try {

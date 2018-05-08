@@ -36,7 +36,7 @@ public class Main {
 
 			if (b2 == null) {
 				System.out.println("Ungültige Blocknummer:" + id);
-				return;
+				
 			} else {
 				System.out.println(b2.payload);
 			}
