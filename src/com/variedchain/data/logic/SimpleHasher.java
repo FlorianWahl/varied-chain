@@ -2,10 +2,12 @@ package com.variedchain.data.logic;
 
 import java.nio.ByteBuffer;
 
+import com.variedchain.data.block.Hash;
+
 public class SimpleHasher extends HasherBasic {
 
 	@Override
-	public byte[] calculateHash(byte[] data) {
+	public Hash calculateHash(byte[] data) {
 		long sum = 0;
 		for (int i = 0; i < data.length; i++) {
 			sum = sum + data[i];
@@ -15,6 +17,6 @@ public class SimpleHasher extends HasherBasic {
 		}
 		ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
 		buffer.putLong(sum);
-		return buffer.array();
+		return new Hash(SimpleHasher.class.getCanonicalName(), buffer.array());
 	}
 }

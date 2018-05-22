@@ -3,10 +3,12 @@ package com.variedchain.data.logic;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import com.variedchain.data.block.Hash;
+
 public class HasherAdvanced extends HasherBasic {
 
 	@Override
-	public byte[] calculateHash(byte[] data) {
+	public Hash calculateHash(byte[] data) {
 
 		MessageDigest digest = null;
 		try {
@@ -15,7 +17,7 @@ public class HasherAdvanced extends HasherBasic {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return digest.digest(data);
+		return new Hash(HasherAdvanced.class.getCanonicalName(), digest.digest(data));
 	}
 
 }

@@ -5,10 +5,10 @@ import java.util.Date;
 public class Block {
 	public long blockId;
 	public int blockVersion;
-	public byte[] hashPriv;
+	public Hash hashPriv;
 	public String payload;
 	public String payloadType;
-	public byte[] hashPayload;
+	public Hash hashPayload;
 	public Date timePoint;
 	public String txNum;
 }

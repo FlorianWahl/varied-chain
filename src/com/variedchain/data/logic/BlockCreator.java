@@ -3,28 +3,24 @@ package com.variedchain.data.logic;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import com.google.gson.Gson;
 import com.variedchain.data.block.Block;
+import com.variedchain.data.block.Hash;
 
 public class BlockCreator extends BlockFactory {
 
 	private HasherBasic hasher;
 	private HasherAdvanced ahasher;
 	private Gson gson;
-	private HasherBasic[] versions;
 	
 	public BlockCreator() {
 		hasher = new SimpleHasher();
 		ahasher = new HasherAdvanced();
 		gson = new Gson();
-		versions = new HasherBasic[2];
-		versions[0] = hasher;
-		versions[1] = ahasher;
 	}
 
 	@Override
@@ -36,7 +32,7 @@ public class BlockCreator extends BlockFactory {
 			block.hashPayload = ahasher.calculateHash(block.payload.getBytes());
 		}
 		if (block.blockId > 0) {
-			byte[] privhash = loadhash(block.blockId - 1);
+			Hash privhash = loadhash(block.blockId - 1);
 			if (privhash == null) {
 				return false;
 			}
@@ -45,7 +41,7 @@ public class BlockCreator extends BlockFactory {
 		FileWriter blockFileWriter = new FileWriter(block.blockId + ".block.json");
 		gson.toJson(block, blockFileWriter);
 		blockFileWriter.close();
-		byte[] blockHash;
+		Hash blockHash;
 		String blockString = gson.toJson(block);
 		if (block.blockVersion == 1) {
 			blockHash = hasher.calculateHash(blockString.getBytes());
@@ -63,30 +59,37 @@ public class BlockCreator extends BlockFactory {
 	public boolean checkBlockById(long id) {
 		try {
 			FileReader hashFileReader = new FileReader(id + ".hash.json");
-			byte[] fsh = gson.fromJson(hashFileReader, byte[].class);
+			Hash fsh = gson.fromJson(hashFileReader, Hash.class);
 			hashFileReader.close();
 
 			Path path = Paths.get(id + ".block.json");
 			byte[] data = Files.readAllBytes(path);
-			
-			for(int i = 0; i<versions.length; i++) {
-				if(hashValidate(versions[i].calculateHash(data), fsh)) {
+			HasherBasic hasher = (HasherBasic)Class.forName(fsh.method).newInstance();
+			if(hashValidate(hasher.calculateHash(data), fsh)){
+				if(id==0){
 					return true;
 				}
+				
+				FileReader hashFileReader2 = new FileReader((id-1) + ".hash.json");
+				Hash fsh2 = gson.fromJson(hashFileReader2, Hash.class);
+				hashFileReader2.close();
+				
+				Block b = loadBlock(id, false);
+				return hashValidate(b.hashPriv, fsh2);
 			}
 			
-		} catch (IOException e) {
+		} catch (IOException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			return false;
 		}
 		return false;
 	}
 	
-	public boolean hashValidate(byte[] ch, byte[] fsh) {
-		if (ch.length != fsh.length) {
+	public boolean hashValidate(Hash ch, Hash fsh) {
+		if (ch.value.length != fsh.value.length) {
 			return false;
 		}
-		for (int i = 0; i < ch.length; i++) {
-			if (ch[i] != fsh[i]) {
+		for (int i = 0; i < ch.value.length; i++) {
+			if (ch.value[i] != fsh.value[i]) {
 				return false;
 			}
 		}
@@ -103,18 +106,18 @@ public class BlockCreator extends BlockFactory {
 
 			Path path = Paths.get(block.blockId + ".block.json");
 			byte[] data = Files.readAllBytes(path);
-			byte[] ch;
+			Hash ch;
 			if (block.blockVersion == 1) {
 				 ch = hasher.calculateHash(data);
 			} else {
 				 ch = ahasher.calculateHash(data);
 			}
 
-			if (ch.length != fsh.length) {
+			if (ch.value.length != fsh.length) {
 				return false;
 			}
-			for (int i = 0; i < ch.length; i++) {
-				if (ch[i] != fsh[i]) {
+			for (int i = 0; i < ch.value.length; i++) {
+				if (ch.value[i] != fsh[i]) {
 					return false;
 				}
 			}
@@ -125,14 +128,14 @@ public class BlockCreator extends BlockFactory {
 	}
 
 	@Override
-	public byte[] loadhash(long id) {
-		byte[] hash = null;
+	public Hash loadhash(long id) {
+		Hash hash = null;
 		if (!checkBlockById(id)) {
 			return null;
 		}
 		try {
 			FileReader hashFileReader = new FileReader(id + ".hash.json");
-			hash = gson.fromJson(hashFileReader, byte[].class);
+			hash = gson.fromJson(hashFileReader, Hash.class);
 			hashFileReader.close();
 		} catch (IOException e) {
 			return null;
@@ -151,7 +154,11 @@ public class BlockCreator extends BlockFactory {
 
 	@Override
 	public Block loadBlock(long blockId) {
-		if (!checkBlockById(blockId)) {
+		return loadBlock(blockId, true);
+	}
+	
+	private Block loadBlock(long blockId, boolean check) {
+		if (check && !checkBlockById(blockId)) {
 			return null;
 		}
 		try {
