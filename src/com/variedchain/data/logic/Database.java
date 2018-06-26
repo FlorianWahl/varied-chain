@@ -18,10 +18,11 @@ public class Database {
 	}
 	
 	public static void addtolist(String ip) throws IOException {
+		System.out.println("addtolist: " + ip);
 		nodeiplist.add(ip);
 		FileWriter fw = new FileWriter("iplist");
 		for (String nodeip : nodeiplist) {
-			fw.write(ip);
+			fw.write(nodeip+ "\n");
 		}
 		fw.close();
 		
