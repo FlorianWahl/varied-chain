@@ -18,7 +18,7 @@ public class BackgroundAsync implements Runnable {
 			getdatafromserver(ip, "ping");
 			}
 			try {
-				Thread.sleep(6000);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -31,9 +31,10 @@ public class BackgroundAsync implements Runnable {
 			Socket socket = new Socket(server, 6789);
 			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-			out.println(command);
+			out.println(command + "\n");
 			ArrayList<String> ret = new ArrayList<String>();
 			String s;
+			out.flush();
 			while ((s = br.readLine()) != null) {
 				ret.add(s);
 			}
