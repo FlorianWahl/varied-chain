@@ -23,8 +23,10 @@ public class IpList extends Basic {
 		}
 		out.writeUTF("OK\n");
 		for (String ip : Database.getlist()) {
-			out.writeUTF(ip);
-			out.writeUTF("\n");
+			if(!Database.getlist().contains(ip)) {
+				out.writeUTF(ip);
+				out.writeUTF("\n");
+			}
 		}
 		out.writeUTF("END");
 
