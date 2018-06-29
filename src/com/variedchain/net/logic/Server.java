@@ -53,9 +53,9 @@ public class Server {
 					onecommand.doit(inFromClient, outToClient, remoteaddressfinal);
 					break;
 				}
-
 			}
-
+			outToClient.close();
+			inFromClient.close();
 		}
 	}
 }
