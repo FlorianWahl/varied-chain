@@ -15,7 +15,6 @@ public class Ping extends Basic {
 	@Override
 	public void doit(BufferedReader in, DataOutputStream out, String remote) throws IOException {
 	   out.writeUTF("OK\n");
-	   
 	}
 
 }
