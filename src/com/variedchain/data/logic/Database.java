@@ -9,22 +9,22 @@ public class Database {
 	private static ArrayList<String> nodeiplist = new ArrayList<String>();
 	
 	public static boolean isconnected(String ip) {
-		for (String nodeip : nodeiplist) {
-			if(ip.equals(nodeip)) {
-				return true;
-			}
+		if(nodeiplist.contains(ip)) {
+			return true;
 		}
+		
 		return false;
 	}
 	
 	public static void addtolist(String ip) throws IOException {
 		System.out.println("addtolist: " + ip);
-		nodeiplist.add(ip);
+		if(!nodeiplist.contains(ip)) {
+			nodeiplist.add(ip);
+		}
+		
 		FileWriter fw = new FileWriter("iplist");
 		for (String nodeip : nodeiplist) {
-			if(!nodeiplist.contains(nodeip)) {
 				fw.write(nodeip+ "\n");
-			}
 		}
 		fw.close();
 		
