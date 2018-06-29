@@ -15,7 +15,8 @@ public class BackgroundAsync implements Runnable {
 		for (;;) {
 			System.out.println("Hello Background");
 			for (String ip : Database.getlist()) {
-			getdatafromserver(ip, "ping");
+				ArrayList<String> result = getdatafromserver(ip, "ping");
+				int a = 1;
 			}
 			try {
 				Thread.sleep(1000);
