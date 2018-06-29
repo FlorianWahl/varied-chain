@@ -7,6 +7,7 @@ import java.util.Scanner;
 import com.variedchain.data.logic.Database;
 import com.variedchain.net.logic.commands.Basic;
 import com.variedchain.net.logic.commands.IpList;
+import com.variedchain.net.logic.commands.Ping;
 import com.variedchain.net.logic.commands.Request;
 
 public class Server {
@@ -16,7 +17,7 @@ public class Server {
 		String clientSentence;
 		String capitalizedSentence;
 		ServerSocket welcomeSocket = new ServerSocket(6789);
-		Basic[] commands = new Basic[] { new Request(), new IpList() };
+		Basic[] commands = new Basic[] { new Request(), new IpList(), new Ping() };
 
 		File file = new File("iplist");
 		if (file.exists()) {
@@ -31,6 +32,9 @@ public class Server {
 			sc.close();
 		}
 
+		Thread t1 = new Thread(new BackgroundAsync());
+		t1.start();
+		
 		while (true) {
 			Socket connectionSocket = welcomeSocket.accept();
 			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
