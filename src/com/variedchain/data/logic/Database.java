@@ -22,7 +22,7 @@ public class Database {
 		nodeiplist.add(ip);
 		FileWriter fw = new FileWriter("iplist");
 		for (String nodeip : nodeiplist) {
-			if(!Database.getlist().contains(ip)) {
+			if(!nodeiplist.contains(nodeip)) {
 				fw.write(nodeip+ "\n");
 			}
 		}
