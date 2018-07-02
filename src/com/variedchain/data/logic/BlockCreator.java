@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import com.google.gson.Gson;
 import com.variedchain.data.block.Block;
@@ -169,5 +170,21 @@ public class BlockCreator extends BlockFactory {
 		} catch (IOException e) {
 			return null;
 		}
+	}
+
+	@Override
+	public String convertBlock(long blockId) {
+		List<String> ret;
+		try {
+			ret = Files.readAllLines(Paths.get(blockId + ".block.json"));
+		} catch (IOException e) {
+			return null;
+		}
+		return ret.toString();
+	}
+
+	@Override
+	public Block stringToBlock(String block) {
+		return gson.fromJson(block, Block.class);
 	}
 }

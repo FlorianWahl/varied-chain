@@ -21,7 +21,7 @@ public class BackgroundAsync implements Runnable {
 				ArrayList<String> result = getdatafromserver(ip, "req");
 				Database.addtolist(getdatafromserver(ip, "iplist"));
 				result = getdatafromserver(ip, "blocks");
-				checkBlocks(result);
+				checkBlocks(ip, result);
 			}
 			try {
 				Thread.sleep(1000);
@@ -56,14 +56,20 @@ public class BackgroundAsync implements Runnable {
 
 	}
 	
-	public static void checkBlocks(ArrayList<String> blocks) {
-		if(blocks == null || blocks.get(0).equals("OK")) {
+	public static void checkBlocks(String ip, ArrayList<String> blocks) {
+		if(blocks == null || !blocks.get(0).equals("OK")) {
 			return;
 		}
 		
 		if(Long.parseLong(blocks.get(1)) > Database.getSize()) {
-			System.out.println("Anderer hat mehr blocks");
+			System.out.println("Anderer hat mehr blocks" + Long.parseLong(blocks.get(1)));
+			ArrayList<String> getblock = getdatafromserver(ip, "getblock " + Database.getSize());
+			if(getblock == null || !getblock.get(0).equals("OK")) {
+				return;
+			}
+			Database.recieveBlock(getblock.get(1));
 		}
 		
 	}
+	
 }

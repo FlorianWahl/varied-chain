@@ -17,4 +17,8 @@ public abstract class BlockFactory {
 	public abstract long getSize();
 
 	public abstract Block loadBlock(long blockId);
+	
+	public abstract String convertBlock(long blockId);
+	
+	public abstract Block stringToBlock(String block);
 }

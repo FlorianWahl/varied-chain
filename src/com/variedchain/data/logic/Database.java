@@ -56,4 +56,15 @@ public class Database {
 		return bf.getSize();
 	}
 
+	public static String getBlock(Long blockID) {
+		return bf.convertBlock(blockID);
+	}
+
+	public static void recieveBlock(String block) {
+		try {
+			bf.addNewBlock(bf.stringToBlock(block));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }
