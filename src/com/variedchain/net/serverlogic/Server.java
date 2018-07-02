@@ -7,6 +7,7 @@ import java.util.Scanner;
 import com.variedchain.data.logic.Database;
 import com.variedchain.net.serverlogic.commands.Basic;
 import com.variedchain.net.serverlogic.commands.Blocks;
+import com.variedchain.net.serverlogic.commands.GetBlock;
 import com.variedchain.net.serverlogic.commands.IpList;
 import com.variedchain.net.serverlogic.commands.Ping;
 import com.variedchain.net.serverlogic.commands.Request;
@@ -18,7 +19,7 @@ public class Server {
 		String clientSentence;
 		String capitalizedSentence;
 		ServerSocket welcomeSocket = new ServerSocket(6789);
-		Basic[] commands = new Basic[] { new Request(), new IpList(), new Ping(), new Blocks() };
+		Basic[] commands = new Basic[] { new Request(), new IpList(), new Ping(), new Blocks(), new GetBlock() };
 
 		File file = new File("iplist");
 		if (file.exists()) {
