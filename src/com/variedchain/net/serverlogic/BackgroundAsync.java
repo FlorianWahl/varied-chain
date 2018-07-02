@@ -57,14 +57,14 @@ public class BackgroundAsync implements Runnable {
 	}
 	
 	public static void checkBlocks(String ip, ArrayList<String> blocks) {
-		if(blocks == null || !blocks.get(0).equals("OK")) {
+		if(blocks == null || !blocks.get(0).trim().equals("OK")) {
 			return;
 		}
 		
 		if(Long.parseLong(blocks.get(1)) > Database.getSize()) {
 			System.out.println("Anderer hat mehr blocks" + Long.parseLong(blocks.get(1)));
 			ArrayList<String> getblock = getdatafromserver(ip, "getblock " + Database.getSize());
-			if(getblock == null || !getblock.get(0).equals("OK")) {
+			if(getblock == null || !getblock.get(0).trim().equals("OK")) {
 				return;
 			}
 			Database.recieveBlock(getblock.get(1));
