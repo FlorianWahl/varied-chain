@@ -34,4 +34,21 @@ public class Database {
 		return nodeiplist;
 	}
 
+	public static void addtolist(ArrayList<String> ipadresses) {
+		if(ipadresses == null) {
+			return;
+		}
+		
+		for(String ip : ipadresses) {
+			if(ip.trim().equals("OK") || ip.trim().equals("END") || ip.trim().equals("")) {
+				continue;
+			}
+			try {
+				addtolist(ip);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 }
