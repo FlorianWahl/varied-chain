@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class Database {
 	
 	private static ArrayList<String> nodeiplist = new ArrayList<String>();
-	private static BlockFactory bf;
+	private static BlockFactory bf = new BlockCreator();
 	
 	public static boolean isconnected(String ip) {
 		if(nodeiplist.contains(ip)) {
