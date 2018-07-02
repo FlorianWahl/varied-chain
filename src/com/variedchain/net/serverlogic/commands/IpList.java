@@ -1,17 +1,18 @@
-package com.variedchain.net.logic.commands;
+package com.variedchain.net.serverlogic.commands;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.SocketAddress;
 
 import com.variedchain.data.logic.Database;
 
-public class Blocks extends Basic {
+public class IpList extends Basic {
 
 	@Override
 	public boolean yourCommand(String input) {
-		
-		return input.equals("blocks");
+
+		return input.equals("iplist");
 	}
 
 	@Override
@@ -21,7 +22,12 @@ public class Blocks extends Basic {
 			return;
 		}
 		out.writeUTF("OK\n");
-		out.writeUTF("" + Database.getSize());	
+		for (String ip : Database.getlist()) {
+			out.writeUTF(ip);
+			out.writeUTF("\n");
+		}
+		out.writeUTF("END");
+
 	}
 
 }

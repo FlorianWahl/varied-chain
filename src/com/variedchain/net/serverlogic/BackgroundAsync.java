@@ -1,4 +1,4 @@
-package com.variedchain.net.logic;
+package com.variedchain.net.serverlogic;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;

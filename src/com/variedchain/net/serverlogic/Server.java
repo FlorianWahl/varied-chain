@@ -1,15 +1,15 @@
-package com.variedchain.net.logic;
+package com.variedchain.net.serverlogic;
 
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
 import com.variedchain.data.logic.Database;
-import com.variedchain.net.logic.commands.Basic;
-import com.variedchain.net.logic.commands.Blocks;
-import com.variedchain.net.logic.commands.IpList;
-import com.variedchain.net.logic.commands.Ping;
-import com.variedchain.net.logic.commands.Request;
+import com.variedchain.net.serverlogic.commands.Basic;
+import com.variedchain.net.serverlogic.commands.Blocks;
+import com.variedchain.net.serverlogic.commands.IpList;
+import com.variedchain.net.serverlogic.commands.Ping;
+import com.variedchain.net.serverlogic.commands.Request;
 
 public class Server {
 

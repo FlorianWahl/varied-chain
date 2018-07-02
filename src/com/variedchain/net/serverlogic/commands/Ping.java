@@ -1,4 +1,4 @@
-package com.variedchain.net.logic.commands;
+package com.variedchain.net.serverlogic.commands;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;

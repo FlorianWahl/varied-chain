@@ -1,4 +1,4 @@
-package com.variedchain.net.logic.commands;
+package com.variedchain.net.serverlogic.commands;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -6,15 +6,12 @@ import java.io.IOException;
 
 import com.variedchain.data.logic.Database;
 
-public class GetBlock extends Basic {
-	Long blockID;
+public class Blocks extends Basic {
+
 	@Override
 	public boolean yourCommand(String input) {
-		if(input.startsWith("getblock ")) {
-			blockID = Long.parseLong(input.substring(9));
-			return true;
-		}
-		return false;
+		
+		return input.equals("blocks");
 	}
 
 	@Override
@@ -24,7 +21,7 @@ public class GetBlock extends Basic {
 			return;
 		}
 		out.writeUTF("OK\n");
-		out.writeUTF("" + Database.getBlock(blockID));	
+		out.writeUTF("" + Database.getSize());	
 	}
 
 }
