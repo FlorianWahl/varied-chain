@@ -17,16 +17,17 @@ public class BackgroundAsync implements Runnable {
 		for (;;) {
 			System.out.println("Hello Background");
 			for (String ip : Database.getlist()) {
+				//TODO if ipadresse unavailable -> delete from iplist
 				ArrayList<String> result = getdatafromserver(ip, "req");
-				ArrayList<String> ipadresses = getdatafromserver(ip, "iplist");
-				Database.addtolist(ipadresses);
+				Database.addtolist(getdatafromserver(ip, "iplist"));
+				result = getdatafromserver(ip, "blocks");
+				checkBlocks(result);
 			}
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
 		}
 	}
 
@@ -53,5 +54,16 @@ public class BackgroundAsync implements Runnable {
 			return null;
 		}
 
+	}
+	
+	public static void checkBlocks(ArrayList<String> blocks) {
+		if(blocks == null || blocks.get(0).equals("OK")) {
+			return;
+		}
+		
+		if(Long.parseLong(blocks.get(1)) > Database.getSize()) {
+			System.out.println("Anderer hat mehr blocks");
+		}
+		
 	}
 }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class Database {
 	
 	private static ArrayList<String> nodeiplist = new ArrayList<String>();
+	private static BlockFactory bf;
 	
 	public static boolean isconnected(String ip) {
 		if(nodeiplist.contains(ip)) {
@@ -49,6 +50,10 @@ public class Database {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public static long getSize() {
+		return bf.getSize();
 	}
 
 }
