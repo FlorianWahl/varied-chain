@@ -185,6 +185,8 @@ public class BlockCreator extends BlockFactory {
 
 	@Override
 	public Block stringToBlock(String block) {
-		return gson.fromJson(block, Block.class);
+		Block[] blockarray = gson.fromJson(block, Block[].class);
+		Block ret = blockarray[0];
+		return ret;
 	}
 }
