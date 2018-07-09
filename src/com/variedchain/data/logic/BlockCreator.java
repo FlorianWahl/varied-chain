@@ -189,4 +189,16 @@ public class BlockCreator extends BlockFactory {
 		Block ret = blockarray[0];
 		return ret;
 	}
+
+	@Override
+	public String getHash(Long blockID) {
+		List<String> ret;
+		try {
+			ret = Files.readAllLines(Paths.get(blockID + ".hash.json"));
+		} catch (IOException e) {
+			return null;
+		}
+		return ret.toString();
+	}
+	
 }

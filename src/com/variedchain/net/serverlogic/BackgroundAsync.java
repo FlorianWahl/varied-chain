@@ -63,11 +63,18 @@ public class BackgroundAsync implements Runnable {
 		
 		if(Long.parseLong(blocks.get(1)) > Database.getSize()) {
 			System.out.println("Anderer hat mehr blocks" + Long.parseLong(blocks.get(1)));
-			ArrayList<String> getblock = getdatafromserver(ip, "getblock " + Database.getSize());
+			Long newBlock = Database.getSize();
+			ArrayList<String> getblock = getdatafromserver(ip, "getblock " + newBlock);
 			if(getblock == null || !getblock.get(0).trim().equals("OK")) {
 				return;
 			}
 			Database.recieveBlock(getblock.get(1));
+			if(!Database.getHash(newBlock).equals(getblock.get(2))) {
+				// TODO abfrage mehrheit implementieren
+				System.out.println("Block doesnt equal " + newBlock);
+			}
+			
+			
 		}
 		
 	}

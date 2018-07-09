@@ -21,4 +21,6 @@ public abstract class BlockFactory {
 	public abstract String convertBlock(long blockId);
 	
 	public abstract Block stringToBlock(String block);
+
+	public abstract String getHash(Long blockID);
 }

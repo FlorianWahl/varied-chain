@@ -24,7 +24,8 @@ public class GetBlock extends Basic {
 			return;
 		}
 		out.writeUTF("OK\n");
-		out.writeUTF("" + Database.getBlock(blockID));	
+		out.writeUTF("" + Database.getBlock(blockID));
+		out.writeUTF("" + Database.getHash(blockID));
 	}
 
 }

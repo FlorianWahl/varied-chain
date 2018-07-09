@@ -67,4 +67,8 @@ public class Database {
 			e.printStackTrace();
 		}
 	}
+
+	public static String getHash(Long blockID) {
+		return bf.getHash(blockID);
+	}
 }
