@@ -16,7 +16,7 @@ public class Main {
 		testBlock.blockVersion = 2;
 		testBlock.hashPayload = null;
 		testBlock.hashPriv = null;
-		testBlock.payload = "variedchani";
+		testBlock.payload = "variedchani" + Math.random();
 		testBlock.payloadType = "text/plain";
 		testBlock.timePoint = new Date();
 		testBlock.txNum = "1";
