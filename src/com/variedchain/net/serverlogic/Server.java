@@ -38,6 +38,8 @@ public class Server {
 		t1.start();
 		
 		while (true) {
+			if (!t1.isAlive()) t1.start();
+			
 			Socket connectionSocket = welcomeSocket.accept();
 			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 			DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
