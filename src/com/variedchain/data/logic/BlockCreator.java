@@ -17,6 +17,7 @@ public class BlockCreator extends BlockFactory {
 	private HasherBasic hasher;
 	private HasherAdvanced ahasher;
 	private Gson gson;
+	public static final String blockpath = "bloecke";
 	
 	public BlockCreator() {
 		hasher = new SimpleHasher();
@@ -39,7 +40,7 @@ public class BlockCreator extends BlockFactory {
 			}
 			block.hashPriv = privhash;
 		}
-		FileWriter blockFileWriter = new FileWriter(block.blockId + ".block.json");
+		FileWriter blockFileWriter = new FileWriter(blockpath+"/"+block.blockId + ".block.json");
 		gson.toJson(block, blockFileWriter);
 		blockFileWriter.close();
 		Hash blockHash;
@@ -50,7 +51,7 @@ public class BlockCreator extends BlockFactory {
 			blockHash = ahasher.calculateHash(blockString.getBytes());
 		}
 
-		FileWriter hashFileWriter = new FileWriter(block.blockId + ".hash.json");
+		FileWriter hashFileWriter = new FileWriter(blockpath+"/"+block.blockId + ".hash.json");
 		gson.toJson(blockHash, hashFileWriter);
 		hashFileWriter.close();
 		return true;
@@ -59,11 +60,11 @@ public class BlockCreator extends BlockFactory {
 	@Override
 	public boolean checkBlockById(long id) {
 		try {
-			FileReader hashFileReader = new FileReader(id + ".hash.json");
+			FileReader hashFileReader = new FileReader(blockpath+"/"+id + ".hash.json");
 			Hash fsh = gson.fromJson(hashFileReader, Hash.class);
 			hashFileReader.close();
 
-			Path path = Paths.get(id + ".block.json");
+			Path path = Paths.get(blockpath+"/"+id + ".block.json");
 			byte[] data = Files.readAllBytes(path);
 			HasherBasic hasher = (HasherBasic)Class.forName(fsh.method).newInstance();
 			if(hashValidate(hasher.calculateHash(data), fsh)){
@@ -71,7 +72,7 @@ public class BlockCreator extends BlockFactory {
 					return true;
 				}
 				
-				FileReader hashFileReader2 = new FileReader((id-1) + ".hash.json");
+				FileReader hashFileReader2 = new FileReader(blockpath+"/"+(id-1) + ".hash.json");
 				Hash fsh2 = gson.fromJson(hashFileReader2, Hash.class);
 				hashFileReader2.close();
 				
@@ -101,11 +102,11 @@ public class BlockCreator extends BlockFactory {
 	@Override
 	public boolean checkBlock(Block block) {
 		try {
-			FileReader hashFileReader = new FileReader(block.blockId + ".hash.json");
+			FileReader hashFileReader = new FileReader(blockpath+"/"+block.blockId + ".hash.json");
 			byte[] fsh = gson.fromJson(hashFileReader, byte[].class);
 			hashFileReader.close();
 
-			Path path = Paths.get(block.blockId + ".block.json");
+			Path path = Paths.get(blockpath+"/"+block.blockId + ".block.json");
 			byte[] data = Files.readAllBytes(path);
 			Hash ch;
 			if (block.blockVersion == 1) {
@@ -135,7 +136,7 @@ public class BlockCreator extends BlockFactory {
 			return null;
 		}
 		try {
-			FileReader hashFileReader = new FileReader(id + ".hash.json");
+			FileReader hashFileReader = new FileReader(blockpath+"/"+id + ".hash.json");
 			hash = gson.fromJson(hashFileReader, Hash.class);
 			hashFileReader.close();
 		} catch (IOException e) {
@@ -163,7 +164,7 @@ public class BlockCreator extends BlockFactory {
 			return null;
 		}
 		try {
-			FileReader blockFileReader = new FileReader(blockId + ".block.json");
+			FileReader blockFileReader = new FileReader(blockpath+"/"+blockId + ".block.json");
 			Block block = gson.fromJson(blockFileReader, Block.class);
 			blockFileReader.close();
 			return block;
@@ -176,7 +177,7 @@ public class BlockCreator extends BlockFactory {
 	public String convertBlock(long blockId) {
 		List<String> ret;
 		try {
-			ret = Files.readAllLines(Paths.get(blockId + ".block.json"));
+			ret = Files.readAllLines(Paths.get(blockpath+"/"+blockId + ".block.json"));
 		} catch (IOException e) {
 			return null;
 		}
@@ -194,7 +195,7 @@ public class BlockCreator extends BlockFactory {
 	public String getHash(Long blockID) {
 		List<String> ret;
 		try {
-			ret = Files.readAllLines(Paths.get(blockID + ".hash.json"));
+			ret = Files.readAllLines(Paths.get(blockpath+"/"+blockID + ".hash.json"));
 		} catch (IOException e) {
 			return null;
 		}
