@@ -25,7 +25,7 @@ public class ChainGui extends JFrame {
 
 	static JFrame maingui;
 	static JPanel parentPanel, childPanel1, childPanel2;
-	static JButton btn;
+	static JButton btn, refresh;
 	static JTextField yourContent;
 	static JTable blockchaintabelle;
 	static String data[][];
@@ -51,6 +51,18 @@ public class ChainGui extends JFrame {
 		yourContent.setVisible(true);
 		maingui.add(yourContent);
 		
+		refresh = new JButton("RefreshChain");
+		refresh.setBounds(240, 60, 150, 30);
+		refresh.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				listelements();
+				
+			}
+		});
+		refresh.setVisible(true);
+		maingui.add(refresh);
 	
 
 		btn = new JButton("Create Block");
@@ -106,12 +118,12 @@ public class ChainGui extends JFrame {
 	public static void listelements() {
 		data = new String[(int) Database.getSize()][2];
 		
-		
-		for(int i = 0; i<Database.getSize(); i++) {
+		long high = Database.getSize();
+		for(int i = 0; i<high; i++) {
 		Block block = blockCreator.loadBlock(i);
 
-		data[i][0] = ""+i;
-		data[i][1] = block.payload;
+		data[(int) (high-i-1)][0] = ""+i;
+		data[(int) (high-i-1)][1] = block.payload;
 		
 		}
 		DefaultTableModel defaultTableModel = new DefaultTableModel(data, columnNames);
