@@ -1,5 +1,6 @@
 package com.variedchain.gui;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileReader;
@@ -8,9 +9,12 @@ import java.util.Date;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+
 import com.google.gson.Gson;
 import com.variedchain.data.block.Block;
 import com.variedchain.data.logic.BlockCreator;
@@ -31,13 +35,14 @@ public class ChainGui extends JFrame {
 	private static Gson gson = new Gson();
 	public static final String blockpath = "bloecke";
 	static FileReader blockFileReader;
+	static String[] columnNames = {"ID", "Payload"};;
 
 	public static void main(String[] args) {
 
 		maingui = new JFrame();
-		maingui.setSize(650, 450);
+		maingui.setSize(650, 600);
 		maingui.setTitle("VariedChain V_1.0");
-		maingui.setResizable(false);
+		maingui.setResizable(true);
 		maingui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		maingui.setLayout(null);
 
@@ -45,6 +50,8 @@ public class ChainGui extends JFrame {
 		yourContent.setBounds(20, 20, 600, 40);
 		yourContent.setVisible(true);
 		maingui.add(yourContent);
+		
+	
 
 		btn = new JButton("Create Block");
 		btn.setBounds(20, 60, 200, 30);
@@ -69,39 +76,48 @@ public class ChainGui extends JFrame {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-
+				
+				listelements();
+				
 			}
+			
 		});
 		maingui.add(btn);
 		
-		
-		/*
-		for(int i = 0; i<=Database.getSize(); i++) {
-		try {
-			blockFileReader = new FileReader(blockpath+"/"+i + ".block.json");
-			Block block = gson.fromJson(blockFileReader, Block.class);
-			blockFileReader.close();
-			data[i][0] = block.payload;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		}
-		
-		// Nullpointerexception bie data array
-		*/
-		blockchaintabelle = new JTable(data, null);
+
+				
+		blockchaintabelle = new JTable();
 		blockchaintabelle.setVisible(true);
-		blockchaintabelle.setSize(600, 300);
+		blockchaintabelle.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		blockchaintabelle.setSize(600, 800);
 
 		jScrollPane = new JScrollPane(blockchaintabelle);
-		jScrollPane.setBounds(20, 100, 600, 300);
+		jScrollPane.setPreferredSize(new Dimension(600, 800));
+		jScrollPane.setBounds(20, 100, 600, 700);
 		jScrollPane.setLayout(null);
 		jScrollPane.setVisible(true);
 		jScrollPane.add(blockchaintabelle);
 		maingui.add(jScrollPane);
 
 		maingui.setVisible(true);
+		listelements();
+	}
+	
+	public static void listelements() {
+		data = new String[(int) Database.getSize()][2];
+		
+		
+		for(int i = 0; i<Database.getSize(); i++) {
+		Block block = blockCreator.loadBlock(i);
 
+		data[i][0] = ""+i;
+		data[i][1] = block.payload;
+		
+		}
+		DefaultTableModel defaultTableModel = new DefaultTableModel(data, columnNames);
+		blockchaintabelle.setModel(defaultTableModel);
+		defaultTableModel.fireTableDataChanged();
+		
 	}
 
 }
